@@ -3,7 +3,7 @@
 require "gtk3"
 require_relative "./reader"
 
-builder_file = './gui.ui'
+builder_file = File.dirname(File.expand_path(__FILE__)) + '/gui.ui'
 
 builder = Gtk::Builder.new
 builder.add_from_file builder_file
@@ -22,16 +22,6 @@ button = builder.get_object 'button2'
 button.signal_connect 'clicked' do
   puts 'button 2'
 end
-
-=begin
-{"by"=>"janober",
-"descendants"=>71,
-"id"=>14866118,
-"kids"=>[14866272, 14867334, 14867204, 14866556, 14866372, 14867635, 14866841, 14866398, 14866599, 14866251],
-"score"=>51,
-"time"=>1501168927,
-"title"=>"Apple Apparently Discontinues iPod Nano and iPod Shuffle", "type"=>"story", "url"=>"https://www.macrumors.com/2017/07/27/apple-removes-ipod-nano-ipod-shuffle/"}
-=end
 
 list = builder.get_object 'listbox1'
 reader = HNReader.new
