@@ -2,14 +2,8 @@
 require "gtk3"
 require_relative "./reader"
 
-reader = nil
-Thread.new do
-  reader = HNReader.new # make request in new thread
-end
-
+builder      = Gtk::Builder.new
 builder_file = File.dirname(File.expand_path(__FILE__)) + '/gui.ui'
-
-builder = Gtk::Builder.new
 builder.add_from_file builder_file
 
 window = builder.get_object 'window1'
@@ -17,30 +11,23 @@ window.signal_connect 'destroy' do
   Gtk.main_quit
 end
 
-button = builder.get_object 'button1'
-button.signal_connect 'clicked' do
-  puts 'button 1'
-end
-
-button = builder.get_object 'button2'
-button.signal_connect 'clicked' do
-  puts 'button 2'
+['button1', 'button2'].each do |button_name|
+  button = builder.get_object button_name
+  button.signal_connect 'clicked' do
+    puts button_name
+  end
 end
 
 list = builder.get_object 'listbox1'
+reader = HNReader.new
 
-# wait for the first API request to go through
-while reader == nil
-end
-
-reader.top_ids.each do |id|
+reader.top_ids[0..10].each_with_index do |id, i|
   Thread.new do
-    story = reader.request id
+    story  = reader.request id
     button = Gtk::LinkButton.new story['url'], story['title']
     list.add button
     window.show_all
   end
 end
 
-window.show_all
 Gtk.main
