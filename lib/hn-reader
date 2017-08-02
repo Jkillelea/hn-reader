@@ -1,7 +1,11 @@
 #!/usr/bin/env ruby
-# gem 'gtk3'
 require "gtk3"
 require_relative "./reader"
+
+reader = nil
+Thread.new do
+  reader = HNReader.new # make request in new thread
+end
 
 builder_file = File.dirname(File.expand_path(__FILE__)) + '/gui.ui'
 
@@ -24,7 +28,11 @@ button.signal_connect 'clicked' do
 end
 
 list = builder.get_object 'listbox1'
-reader = HNReader.new
+
+# wait for the first API request to go through
+while reader == nil
+end
+
 reader.top_ids.each do |id|
   Thread.new do
     story = reader.request id
